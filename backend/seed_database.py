@@ -268,7 +268,7 @@ def seed_database():
                 "price": Decimal("14999.00"),
                 "discount_percentage": 10,
                 "stock": 35,
-                "image_url": "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=500&h=500&fit=crop",
+                "image_url": "https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=500&h=500&fit=crop",
                 "rating": 4.6
             },
             {
@@ -542,7 +542,7 @@ def seed_database():
                 "price": Decimal("1999.00"),
                 "discount_percentage": 25,
                 "stock": 120,
-                "image_url": "https://images.unsplash.com/photo-1591290619762-d00bcaf2f0a1?w=500&h=500&fit=crop",
+                "image_url": "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=500&h=500&fit=crop",
                 "rating": 4.3
             },
             {
@@ -552,7 +552,7 @@ def seed_database():
                 "price": Decimal("3499.00"),
                 "discount_percentage": 15,
                 "stock": 90,
-                "image_url": "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=500&h=500&fit=crop",
+                "image_url": "https://images.unsplash.com/photo-1601524909162-ae8725290836?w=500&h=500&fit=crop",
                 "rating": 4.5
             },
             {
@@ -616,7 +616,7 @@ def seed_database():
                 "price": Decimal("5999.00"),
                 "discount_percentage": 25,
                 "stock": 60,
-                "image_url": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=500&fit=crop",
+                "image_url": "https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=500&h=500&fit=crop",
                 "rating": 4.6
             },
             {
@@ -690,7 +690,7 @@ def seed_database():
                 "price": Decimal("1999.00"),
                 "discount_percentage": 25,
                 "stock": 95,
-                "image_url": "https://images.unsplash.com/photo-1554224311-beee460201e9?w=500&h=500&fit=crop",
+                "image_url": "https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?w=500&h=500&fit=crop",
                 "rating": 4.5
             },
             

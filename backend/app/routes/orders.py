@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import APIRouter, Depends, status, Query, Body, HTTPException
 from sqlalchemy.orm import Session
 from app.database.database import get_db
 from app.schemas.schemas import Order
@@ -12,11 +12,17 @@ router = APIRouter(prefix="/api/orders", tags=["orders"])
 
 @router.post("", response_model=Order, status_code=status.HTTP_201_CREATED)
 async def create_order(
-    shipping_address: str,
+    payload: dict = Body(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """Create order from cart."""
+    shipping_address = payload.get("shipping_address")
+    if not shipping_address:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="shipping_address is required"
+        )
     order = OrderService.create_order(current_user.id, shipping_address, db)
     return order
 
