@@ -117,21 +117,21 @@ const ordersSlice = createSlice({
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })[Redux] fetchUserOrders fulfilled, payload:', action.payload);
+      })
+      .addCase(fetchUserOrders.pending, (state) => {
+        console.log('⏳ fetchUserOrders pending');
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserOrders.fulfilled, (state, action) => {
+        console.log('✅ [Redux] fetchUserOrders fulfilled, payload:', action.payload);
         console.log('✅ [Redux] Payload items:', action.payload.items);
         console.log('✅ [Redux] Payload total:', action.payload.total);
         state.loading = false;
         state.orders = action.payload.items || [];
         state.total = action.payload.total || 0;
         console.log('✅ [Redux] Orders set to state:', state.orders);
-        console.log('✅ [Redux] State orders length:', state.orders.length
-      })
-      .addCase(fetchUserOrders.fulfilled, (state, action) => {
-        console.log('✅ fetchUserOrders fulfilled, payload:', action.payload);
-        state.loading = false;
-        state.orders = action.payload.items;
-        state.total = action.payload.total;
-        console.log('✅ Orders set to state:', state.orders);
+        console.log('✅ [Redux] State orders length:', state.orders.length);
       })
       .addCase(fetchUserOrders.rejected, (state, action) => {
         console.error('❌ fetchUserOrders rejected:', action.payload);

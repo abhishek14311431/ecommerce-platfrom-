@@ -177,7 +177,13 @@ const OrdersPage: React.FC = () => {
           </p>
         </div>
 
-        {orders.length === 0 ? (
+        {/* Debug info */}
+        {console.log('🎨 [OrdersPage Render] orders:', orders)}
+        {console.log('🎨 [OrdersPage Render] orders length:', orders?.length)}
+        {console.log('🎨 [OrdersPage Render] orders is array?:', Array.isArray(orders))}
+        {console.log('🎨 [OrdersPage Render] loading:', loading)}
+
+        {!orders || orders.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
             <p className="text-xl text-gray-600 mb-4">You have no orders yet</p>
             <Link to="/" className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
