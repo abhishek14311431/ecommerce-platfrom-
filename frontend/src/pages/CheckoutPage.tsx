@@ -162,12 +162,12 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
-  if (!isAuthenticated || items.length === 0) {
+  if (!isAuthenticated || (items.length === 0 && !orderCreated)) {
     return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Header */}
       <nav className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
@@ -180,6 +180,7 @@ const CheckoutPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
+        {!showSuccessModal && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
@@ -547,6 +548,7 @@ const CheckoutPage: React.FC = () => {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       {/* Success Modal */}
