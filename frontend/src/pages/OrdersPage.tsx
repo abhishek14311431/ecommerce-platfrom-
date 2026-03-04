@@ -20,6 +20,8 @@ const OrdersPage: React.FC = () => {
   // Debug: Log orders state changes
   useEffect(() => {
     console.log('📊 [OrdersPage] Redux State - orders:', orders?.length || 0, 'total:', total, 'loading:', loading);
+    console.log('🎨 [OrdersPage Render] orders:', orders);
+    console.log('🎨 [OrdersPage Render] orders is array?:', Array.isArray(orders));
   }, [orders, total, loading]);
 
   // Fetch orders when page mounts or when user becomes authenticated
@@ -59,6 +61,23 @@ const OrdersPage: React.FC = () => {
       } catch (error) {
         toast.error('Failed to cancel order');
       }
+    }
+  };
+
+  const handleRefreshOrders = async () => {
+    console.log('🔄 [OrdersPage] Manual refresh triggered');
+    try {
+      const result = await dispatch(fetchUserOrders());
+      if (fetchUserOrders.fulfilled.match(result)) {
+        toast.success('Orders refreshed successfully');
+        console.log('✅ [OrdersPage] Manual refresh successful:', result.payload);
+      } else {
+        toast.error('Failed to refresh orders');
+        console.error('❌ [OrdersPage] Manual refresh failed:', result);
+      }
+    } catch (error) {
+      toast.error('Error refreshing orders');
+      console.error('❌ [OrdersPage] Error during manual refresh:', error);
     }
   };
 
@@ -176,12 +195,6 @@ const OrdersPage: React.FC = () => {
             {total !== undefined && total !== orders?.length && ` (Total: ${total})`}
           </p>
         </div>
-
-        {/* Debug info */}
-        {console.log('🎨 [OrdersPage Render] orders:', orders)}
-        {console.log('🎨 [OrdersPage Render] orders length:', orders?.length)}
-        {console.log('🎨 [OrdersPage Render] orders is array?:', Array.isArray(orders))}
-        {console.log('🎨 [OrdersPage Render] loading:', loading)}
 
         {!orders || orders.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
