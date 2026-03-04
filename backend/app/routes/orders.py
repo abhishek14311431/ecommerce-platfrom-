@@ -6,6 +6,7 @@ from app.services.order_service import OrderService
 from app.services.payment_service import PaymentService
 from app.core.security import get_current_user, get_current_admin_user
 from app.models.models import User, OrderStatus, ReturnExchange
+from typing import List
 
 router = APIRouter(prefix="/api/orders", tags=["orders"])
 
@@ -39,8 +40,11 @@ async def get_user_orders(
     orders, total = OrderService.get_user_orders(current_user.id, db, skip, limit)
     print(f"📦 [API] Found {total} orders for user {current_user.id}")
     print(f"📦 [API] Returning {len(orders)} orders in this batch")
+    # Convert SQLAlchemy models to Pydantic schemas
+    orders_list = [Order.model_validate(order) for order in orders]
     
     return {
+        "items": orders_list
         "items": orders,
         "total": total,
         "skip": skip,
