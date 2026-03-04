@@ -87,6 +87,7 @@ async def delete_category(
 @router.get("/products")
 async def get_products(
     category_id: Optional[int] = Query(None),
+    category: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     min_price: Optional[Decimal] = Query(None),
     max_price: Optional[Decimal] = Query(None),
@@ -98,6 +99,12 @@ async def get_products(
     db: Session = Depends(get_db)
 ):
     """Get all products with filtering and sorting."""
+    # If category name is provided, convert it to category_id
+    if category and not category_id:
+        cat = db.query(CategoryModel).filter(CategoryModel.name == category).first()
+        if cat:
+            category_id = cat.id
+    
     filter_data = ProductFilter(
         category_id=category_id,
         search=search,
