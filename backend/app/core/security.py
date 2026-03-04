@@ -9,7 +9,8 @@ from app.models.models import User
 from app.database.database import get_db
 from sqlalchemy.orm import Session
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use fewer bcrypt rounds for faster password hashing (4 rounds instead of default 12)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=4)
 security = HTTPBearer()
 
 

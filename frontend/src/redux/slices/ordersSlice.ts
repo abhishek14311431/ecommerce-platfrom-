@@ -141,12 +141,19 @@ const ordersSlice = createSlice({
       .addCase(fetchOrderById.fulfilled, (state, action) => {
         state.selectedOrder = action.payload;
       })
+      .addCase(cancelOrder.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(cancelOrder.fulfilled, (state, action) => {
-        state.selectedOrder = action.payload;
-        const index = state.orders.findIndex(order => order.id === action.payload.id);
-        if (index !== -1) {
-          state.orders[index] = action.payload;
-        }
+        state.loading = false;
+        // Remove the cancelled order from the list
+        state.orders = state.orders.filter(order => order.id !== action.payload.id);
+        state.total = Math.max(0, state.total - 1);
+        console.log('✅ Order cancelled and removed from list:', action.payload.id);
+      })
+      .addCase(cancelOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

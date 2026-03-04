@@ -52,14 +52,19 @@ const OrdersPage: React.FC = () => {
   }, [dispatch, isAuthenticated, navigate]);
 
   const handleCancelOrder = async (orderId: number) => {
-    if (window.confirm('Are you sure you want to cancel this order?')) {
+    if (window.confirm('Are you sure you want to cancel this order? It will be removed from your orders list.')) {
       try {
-        await dispatch(cancelOrder(orderId));
-        toast.success('Order cancelled successfully');
-        // Refetch orders after cancellation
-        await dispatch(fetchUserOrders());
+        const result = await dispatch(cancelOrder(orderId));
+        if (cancelOrder.fulfilled.match(result)) {
+          toast.success('Order cancelled and removed successfully');
+          console.log('✅ [OrdersPage] Order cancelled:', orderId);
+        } else {
+          toast.error('Failed to cancel order');
+          console.error('❌ [OrdersPage] Cancel order failed:', result);
+        }
       } catch (error) {
         toast.error('Failed to cancel order');
+        console.error('❌ [OrdersPage] Cancel error:', error);
       }
     }
   };
@@ -344,12 +349,12 @@ const OrdersPage: React.FC = () => {
 
                       {/* Actions */}
                       <div className="p-6 flex gap-4">
-                        {order.status.toLowerCase() !== 'cancelled' && order.status.toLowerCase() !== 'delivered' && (
+                        {order.status.toLowerCase() !== 'cancelled' && order.status.toLowerCase() !== 'delivered' && order.status.toLowerCase() !== 'shipped' && (
                           <button
                             onClick={() => handleCancelOrder(order.id)}
-                            className="flex-1 border border-red-600 text-red-600 py-2 rounded-lg font-semibold hover:bg-red-50"
+                            className="flex-1 bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors"
                           >
-                            Cancel Order
+                            ❌ Cancel Order
                           </button>
                         )}
                         <button
