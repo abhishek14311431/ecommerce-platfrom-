@@ -150,22 +150,8 @@ const CheckoutPage: React.FC = () => {
         // Show success modal with animation
         setShowSuccessModal(true);
         
-        if (paymentMethod === 'cod') {
-          toast.success('🎉 Order placed successfully! You will pay on delivery.', {
-            duration: 4000,
-            icon: '✅',
-          });
-        } else {
-          toast.success(`🎉 Order placed! Processing ${paymentMethod.toUpperCase()} payment...`, {
-            duration: 4000,
-            icon: '✅',
-          });
-        }
-        
-        // Redirect to orders page after 3 seconds
-        setTimeout(() => {
-          navigate('/orders');
-        }, 3000);
+        // Don't show toast when showing modal - the modal is the feedback
+        // Don't auto-redirect - let user click the button
       } else {
         toast.error('Failed to create order');
         setIsProcessing(false);
@@ -566,52 +552,73 @@ const CheckoutPage: React.FC = () => {
       {/* Success Modal */}
       {showSuccessModal && orderDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 transform animate-scale-up shadow-2xl">
-            {/* Success Icon */}
-            <div className="flex justify-center mb-4">
-              <div className="rounded-full bg-green-100 p-4 animate-bounce">
-                <svg className="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                </svg>
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 transform animate-scale-up shadow-2xl">
+            {/* Animated Success Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="relative w-24 h-24">
+                {/* Outer circle pulse */}
+                <div className="absolute inset-0 rounded-full bg-green-100 animate-pulse-scale"></div>
+                {/* Main circle */}
+                <div className="absolute inset-0 rounded-full bg-green-100 flex items-center justify-center">
+                  <svg 
+                    className="w-16 h-16 text-green-500 animate-checkmark" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
               </div>
             </div>
             
             {/* Success Message */}
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+            <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">
               Order Placed Successfully!
             </h2>
-            <p className="text-center text-gray-600 mb-6">
+            <p className="text-center text-gray-600 mb-6 text-lg">
               {paymentMethod === 'cod' 
-                ? 'Your order has been placed. You will pay when you receive the product.' 
-                : `Payment via ${paymentMethod.toUpperCase()} is being processed.`}
+                ? '🎉 Your order has been placed. You will pay on delivery.' 
+                : `✅ Your ${paymentMethod.toUpperCase()} payment is being processed.`}
             </p>
             
             {/* Order Details */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Order Number:</span>
-                <span className="font-semibold text-gray-800">{orderDetails.order_number}</span>
+            <div className="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-200">
+              <div className="flex justify-between mb-3">
+                <span className="text-gray-600 font-medium">Order Number</span>
+                <span className="font-bold text-gray-800">{orderDetails.order_number}</span>
               </div>
-              <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Total Amount:</span>
-                <span className="font-semibold text-green-600">₹{parseFloat(orderDetails.total).toFixed(2)}</span>
+              <div className="flex justify-between mb-3">
+                <span className="text-gray-600 font-medium">Total Amount</span>
+                <span className="font-bold text-green-600 text-lg">₹{parseFloat(orderDetails.total).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Payment Method:</span>
-                <span className="font-semibold text-gray-800">{paymentMethod.toUpperCase()}</span>
+                <span className="text-gray-600 font-medium">Payment Method</span>
+                <span className="font-semibold text-gray-800">{paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod.toUpperCase()}</span>
               </div>
             </div>
-            
-            {/* Action Button */}
-            <button
-              onClick={() => navigate('/orders')}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-            >
-              View Order Details
-            </button>
-            <p className="text-center text-sm text-gray-500 mt-3">
-              Redirecting to orders page...
+
+            {/* Status Check Info */}
+            <p className="text-center text-gray-600 text-sm mb-6 bg-amber-50 p-3 rounded-lg border border-amber-200">
+              📦 Check the status of your order in <span className="font-semibold">My Orders</span>
             </p>
+            
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate('/orders')}
+                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md"
+              >
+                My Orders
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="flex-1 border-2 border-blue-600 text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all"
+              >
+                Continue Shopping
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -631,11 +638,37 @@ const CheckoutPage: React.FC = () => {
             opacity: 1;
           }
         }
+        @keyframes pulse-scale {
+          0%, 100% { 
+            transform: scale(1);
+            opacity: 0.3;
+          }
+          50% { 
+            transform: scale(1.1);
+            opacity: 0.1;
+          }
+        }
+        @keyframes checkmark-draw {
+          0% {
+            stroke-dashoffset: 48;
+          }
+          100% {
+            stroke-dashoffset: 0;
+          }
+        }
         .animate-fade-in {
           animation: fade-in 0.3s ease-out;
         }
         .animate-scale-up {
           animation: scale-up 0.4s ease-out;
+        }
+        .animate-pulse-scale {
+          animation: pulse-scale 2s ease-in-out infinite;
+        }
+        .animate-checkmark {
+          stroke-dasharray: 48;
+          stroke-dashoffset: 48;
+          animation: checkmark-draw 0.6s ease-out 0.3s forwards;
         }
       `}</style>
     </div>
