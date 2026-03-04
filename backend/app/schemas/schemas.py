@@ -314,3 +314,23 @@ class ProductFilter(BaseModel):
     sort_order: Optional[str] = "desc"  # asc, desc
     skip: int = 0
     limit: int = 20
+
+# Return/Exchange Schemas
+class ReturnExchangeCreate(BaseModel):
+    request_type: str  # 'return' or 'exchange'
+    reason: str
+    order_item_id: int
+
+
+class ReturnExchangeResponse(BaseModel):
+    id: int
+    order_id: int
+    request_type: str
+    reason: str
+    status: str
+    notes: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True

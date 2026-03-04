@@ -220,6 +220,25 @@ class FlashSale(Base):
     product = relationship("Product")
 
 
+class ReturnExchange(Base):
+    __tablename__ = "returns_exchanges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    order_item_id = Column(Integer, ForeignKey("order_items.id"), nullable=False)
+    request_type = Column(String(20), nullable=False)  # 'return' or 'exchange'
+    reason = Column(Text, nullable=False)
+    status = Column(String(50), default="pending")  # pending, approved, rejected, completed
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    order = relationship("Order")
+    user = relationship("User")
+    order_item = relationship("OrderItem")
+
+
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
 

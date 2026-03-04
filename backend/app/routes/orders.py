@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, status, Query, Body, HTTPException
 from sqlalchemy.orm import Session
 from app.database.database import get_db
-from app.schemas.schemas import Order
+from app.schemas.schemas import Order, ReturnExchangeCreate, ReturnExchangeResponse
 from app.services.order_service import OrderService
 from app.services.payment_service import PaymentService
 from app.core.security import get_current_user, get_current_admin_user
-from app.models.models import User, OrderStatus
+from app.models.models import User, OrderStatus, ReturnExchange
 
 router = APIRouter(prefix="/api/orders", tags=["orders"])
 
@@ -113,3 +113,64 @@ async def update_order_status(
     order_status = OrderStatus(status)
     order = OrderService.update_order_status(order_id, order_status, db)
     return order
+
+# Return and Exchange Routes
+@router.post("/{order_id}/return-exchange", response_model=ReturnExchangeResponse, status_code=status.HTTP_201_CREATED)
+async def create_return_exchange(
+    order_id: int,
+    payload: dict = Body(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Create a return or exchange request."""
+    order = OrderService.get_order_by_id(order_id, db)
+    
+    # Check if user owns the order
+    if order.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+    
+    # Check if order is delivered
+    if order.status.value != "delivered":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Can only return/exchange delivered orders")
+    
+    request_type = payload.get("request_type")
+    reason = payload.get("reason")
+    order_item_id = payload.get("order_item_id")
+    
+    if not request_type or not reason or not order_item_id:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Missing required fields")
+    
+    if request_type not in ["return", "exchange"]:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid request type")
+    
+    return_exchange = ReturnExchange(
+        order_id=order_id,
+        user_id=current_user.id,
+        order_item_id=order_item_id,
+        request_type=request_type,
+        reason=reason,
+        status="pending"
+    )
+    
+    db.add(return_exchange)
+    db.commit()
+    db.refresh(return_exchange)
+    
+    return return_exchange
+
+
+@router.get("/{order_id}/return-exchange", response_model=list[ReturnExchangeResponse])
+async def get_order_returns_exchanges(
+    order_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get all return/exchange requests for an order."""
+    order = OrderService.get_order_by_id(order_id, db)
+    
+    # Check if user owns the order
+    if order.user_id != current_user.id and not current_user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+    
+    return_exchanges = db.query(ReturnExchange).filter(ReturnExchange.order_id == order_id).all()
+    return return_exchanges
