@@ -142,13 +142,13 @@ const CheckoutPage: React.FC = () => {
         setOrderDetails(order);
         console.log('✅ Order created:', order);
         
-        // Clear the cart after successful order
-        const clearResult = await dispatch(clearCart());
-        console.log('✅ Cart cleared:', clearResult);
-        
-        // Fetch updated orders list
+        // Fetch updated orders list first
         const ordersResult = await dispatch(fetchUserOrders());
         console.log('✅ Orders fetched:', ordersResult);
+        
+        // Then clear the cart after order is confirmed in database
+        const clearResult = await dispatch(clearCart());
+        console.log('✅ Cart cleared:', clearResult);
         
         // Show success modal with animation
         setShowSuccessModal(true);
