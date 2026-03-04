@@ -5,17 +5,10 @@ Run with: python seed_database.py
 
 from app.database.database import SessionLocal, engine
 from app.models.models import User, Category, Product, Coupon, Base
+from app.core.security import hash_password
 from datetime import datetime, timedelta
 from decimal import Decimal
 import random
-from passlib.context import CryptContext
-
-# Create password context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-def hash_password(password: str) -> str:
-    """Hash a password using bcrypt."""
-    return pwd_context.hash(password)
 
 def seed_database():
     # Create all tables
@@ -836,7 +829,13 @@ def seed_database():
                 (User.username == user_data["username"]) | (User.email == user_data["email"])
             ).first()
             
-            if not existing:
+            if existing:
+                existing.username = user_data["username"]
+                existing.email = user_data["email"]
+                existing.password_hash = hash_password(user_data["password"])
+                existing.is_admin = user_data.get("is_admin", False)
+                existing.is_active = user_data.get("is_active", True)
+            else:
                 user = User(
                     username=user_data["username"],
                     email=user_data["email"],

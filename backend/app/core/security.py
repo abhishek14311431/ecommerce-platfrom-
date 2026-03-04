@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
 from typing import Optional, Any
+import base64
+import hashlib
+import hmac
+import secrets
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from app.core.config import settings
@@ -9,19 +12,57 @@ from app.models.models import User
 from app.database.database import get_db
 from sqlalchemy.orm import Session
 
-# Use fewer bcrypt rounds for faster password hashing (4 rounds instead of default 12)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=4)
+PBKDF2_ITERATIONS = 200_000
 security = HTTPBearer()
 
 
 def hash_password(password: str) -> str:
-    """Hash a password using bcrypt."""
-    return pwd_context.hash(password)
+    """Hash a password using PBKDF2-HMAC-SHA256."""
+    salt = secrets.token_bytes(16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt,
+        PBKDF2_ITERATIONS,
+    )
+    salt_b64 = base64.b64encode(salt).decode("utf-8")
+    digest_b64 = base64.b64encode(digest).decode("utf-8")
+    return f"pbkdf2_sha256${PBKDF2_ITERATIONS}${salt_b64}${digest_b64}"
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a plain password against a hashed password."""
-    return pwd_context.verify(plain_password, hashed_password)
+    """Verify a password against PBKDF2 hash (supports legacy bcrypt hashes)."""
+    if not hashed_password:
+        return False
+
+    if hashed_password.startswith("pbkdf2_sha256$"):
+        try:
+            _, iterations_raw, salt_b64, digest_b64 = hashed_password.split("$", 3)
+            iterations = int(iterations_raw)
+            salt = base64.b64decode(salt_b64.encode("utf-8"))
+            expected_digest = base64.b64decode(digest_b64.encode("utf-8"))
+            actual_digest = hashlib.pbkdf2_hmac(
+                "sha256",
+                plain_password.encode("utf-8"),
+                salt,
+                iterations,
+            )
+            return hmac.compare_digest(actual_digest, expected_digest)
+        except (ValueError, TypeError):
+            return False
+
+    if hashed_password.startswith(("$2a$", "$2b$", "$2y$")):
+        try:
+            import bcrypt
+
+            return bcrypt.checkpw(
+                plain_password.encode("utf-8"),
+                hashed_password.encode("utf-8"),
+            )
+        except Exception:
+            return False
+
+    return False
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
