@@ -140,12 +140,15 @@ const CheckoutPage: React.FC = () => {
         const order = result.payload;
         setOrderCreated(true);
         setOrderDetails(order);
+        console.log('✅ Order created:', order);
         
         // Clear the cart after successful order
-        await dispatch(clearCart());
+        const clearResult = await dispatch(clearCart());
+        console.log('✅ Cart cleared:', clearResult);
         
         // Fetch updated orders list
-        await dispatch(fetchUserOrders());
+        const ordersResult = await dispatch(fetchUserOrders());
+        console.log('✅ Orders fetched:', ordersResult);
         
         // Show success modal with animation
         setShowSuccessModal(true);
@@ -153,10 +156,12 @@ const CheckoutPage: React.FC = () => {
         // Don't show toast when showing modal - the modal is the feedback
         // Don't auto-redirect - let user click the button
       } else {
+        console.error('❌ Order creation failed:', result);
         toast.error('Failed to create order');
         setIsProcessing(false);
       }
     } catch (error) {
+      console.error('❌ Order creation error:', error);
       toast.error('An error occurred while creating the order');
       setIsProcessing(false);
     }

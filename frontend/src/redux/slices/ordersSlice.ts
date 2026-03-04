@@ -111,9 +111,22 @@ const ordersSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
+      .addCase(fetchUserOrders.pending, (state) => {
+        console.log('⏳ fetchUserOrders pending');
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchUserOrders.fulfilled, (state, action) => {
+        console.log('✅ fetchUserOrders fulfilled, payload:', action.payload);
+        state.loading = false;
         state.orders = action.payload.items;
         state.total = action.payload.total;
+        console.log('✅ Orders set to state:', state.orders);
+      })
+      .addCase(fetchUserOrders.rejected, (state, action) => {
+        console.error('❌ fetchUserOrders rejected:', action.payload);
+        state.loading = false;
+        state.error = action.payload as string;
       })
       .addCase(fetchOrderById.fulfilled, (state, action) => {
         state.selectedOrder = action.payload;

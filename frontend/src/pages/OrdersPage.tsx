@@ -17,13 +17,25 @@ const OrdersPage: React.FC = () => {
   const [returnReason, setReturnReason] = useState('');
   const [requestType, setRequestType] = useState<'return' | 'exchange'>('return');
 
+  // Fetch orders when page mounts or when user becomes authenticated
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
 
-    dispatch(fetchUserOrders());
+    // Fetch orders immediately
+    const loadOrders = async () => {
+      try {
+        console.log('📦 Fetching orders...');
+        const result = await dispatch(fetchUserOrders());
+        console.log('📦 Orders fetched result:', result);
+      } catch (error) {
+        console.error('❌ Failed to fetch orders:', error);
+      }
+    };
+
+    loadOrders();
   }, [dispatch, isAuthenticated, navigate]);
 
   const handleCancelOrder = async (orderId: number) => {
@@ -31,7 +43,8 @@ const OrdersPage: React.FC = () => {
       try {
         await dispatch(cancelOrder(orderId));
         toast.success('Order cancelled successfully');
-        dispatch(fetchUserOrders());
+        // Refetch orders after cancellation
+        await dispatch(fetchUserOrders());
       } catch (error) {
         toast.error('Failed to cancel order');
       }
