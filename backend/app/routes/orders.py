@@ -35,7 +35,10 @@ async def get_user_orders(
     db: Session = Depends(get_db)
 ):
     """Get all orders for the current user."""
+    print(f"📦 [API] Fetching orders for user: {current_user.username} (ID: {current_user.id})")
     orders, total = OrderService.get_user_orders(current_user.id, db, skip, limit)
+    print(f"📦 [API] Found {total} orders for user {current_user.id}")
+    print(f"📦 [API] Returning {len(orders)} orders in this batch")
     
     return {
         "items": orders,
