@@ -263,16 +263,6 @@ def seed_database():
             },
             {
                 "category_name": "Home Appliances",
-                "name": "Air Purifier Smart",
-                "description": "Smart air purifier with HEPA filter, removes 99.97% of allergens and pollutants",
-                "price": Decimal("14999.00"),
-                "discount_percentage": 10,
-                "stock": 35,
-                "image_url": "https://images.unsplash.com/photo-1625772452859-1c03d5bf1137?w=500&h=500&fit=crop",
-                "rating": 4.6
-            },
-            {
-                "category_name": "Home Appliances",
                 "name": "Vacuum Cleaner Robot",
                 "description": "Automatic robot vacuum cleaner with smart navigation and app control",
                 "price": Decimal("24999.00"),
@@ -611,16 +601,6 @@ def seed_database():
             },
             {
                 "category_name": "Fashion",
-                "name": "Women's Formal Blazer",
-                "description": "Elegant formal blazer for professional look, tailored fit",
-                "price": Decimal("5999.00"),
-                "discount_percentage": 25,
-                "stock": 60,
-                "image_url": "https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=500&h=500&fit=crop",
-                "rating": 4.6
-            },
-            {
-                "category_name": "Fashion",
                 "name": "Sports Cap Premium",
                 "description": "Breathable sports cap with UV protection and adjustable strap",
                 "price": Decimal("899.00"),
@@ -633,16 +613,6 @@ def seed_database():
             # Additional Home Appliances Products
             {
                 "category_name": "Home Appliances",
-                "name": "Electric Kettle Steel",
-                "description": "Fast-boiling stainless steel electric kettle with auto shut-off, 1.8L capacity",
-                "price": Decimal("2999.00"),
-                "discount_percentage": 18,
-                "stock": 70,
-                "image_url": "https://images.unsplash.com/photo-1563297007-0686b7003af7?w=500&h=500&fit=crop",
-                "rating": 4.4
-            },
-            {
-                "category_name": "Home Appliances",
                 "name": "Blender Multi-Function",
                 "description": "Powerful 750W blender with multiple jars and grinding attachments",
                 "price": Decimal("4999.00"),
@@ -650,16 +620,6 @@ def seed_database():
                 "stock": 50,
                 "image_url": "https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=500&h=500&fit=crop",
                 "rating": 4.5
-            },
-            {
-                "category_name": "Home Appliances",
-                "name": "Electric Iron Steam",
-                "description": "Ceramic soleplate steam iron with vertical steam and anti-drip system",
-                "price": Decimal("1999.00"),
-                "discount_percentage": 15,
-                "stock": 80,
-                "image_url": "https://images.unsplash.com/photo-1560794897-52d5e64c6346?w=500&h=500&fit=crop",
-                "rating": 4.2
             },
             
             # Additional Books Products
@@ -800,16 +760,6 @@ def seed_database():
                 "stock": 150,
                 "image_url": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&h=500&fit=crop",
                 "rating": 4.5
-            },
-            {
-                "category_name": "Groceries",
-                "name": "Peanut Butter Creamy",
-                "description": "All-natural creamy peanut butter with no added sugar - 500g jar",
-                "price": Decimal("649.00"),
-                "discount_percentage": 10,
-                "stock": 180,
-                "image_url": "https://images.unsplash.com/photo-1593457377795-b0b05c2b4bfd?w=500&h=500&fit=crop",
-                "rating": 4.6
             },
             {
                 "category_name": "Groceries",
