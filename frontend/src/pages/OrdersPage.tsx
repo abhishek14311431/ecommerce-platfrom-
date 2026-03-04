@@ -9,13 +9,18 @@ import api from '../services/api';
 const OrdersPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { orders, loading } = useSelector((state: RootState) => state.orders);
+  const { orders, loading, total } = useSelector((state: RootState) => state.orders);
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
   const [returnRequests, setReturnRequests] = useState<{ [key: number]: any[] }>({});
   const [showReturnModal, setShowReturnModal] = useState<{ orderId: number; itemId: number } | null>(null);
   const [returnReason, setReturnReason] = useState('');
   const [requestType, setRequestType] = useState<'return' | 'exchange'>('return');
+
+  // Debug: Log orders state changes
+  useEffect(() => {
+    console.log('📊 [OrdersPage] Redux State - orders:', orders?.length || 0, 'total:', total, 'loading:', loading);
+  }, [orders, total, loading]);
 
   // Fetch orders when page mounts or when user becomes authenticated
   useEffect(() => {
@@ -27,11 +32,17 @@ const OrdersPage: React.FC = () => {
     // Fetch orders immediately
     const loadOrders = async () => {
       try {
-        console.log('📦 Fetching orders...');
+        console.log('📦 [OrdersPage] Fetching orders for authenticated user...');
         const result = await dispatch(fetchUserOrders());
-        console.log('📦 Orders fetched result:', result);
+        console.log('📦 [OrdersPage] Orders fetched result:', result);
+        
+        if (fetchUserOrders.fulfilled.match(result)) {
+          console.log('✅ [OrdersPage] Successfully loaded orders:', result.payload);
+        } else if (fetchUserOrders.rejected.match(result)) {
+          console.error('❌ [OrdersPage] Failed to load orders:', result.payload);
+        }
       } catch (error) {
-        console.error('❌ Failed to fetch orders:', error);
+        console.error('❌ [OrdersPage] Error fetching orders:', error);
       }
     };
 
@@ -139,7 +150,14 @@ const OrdersPage: React.FC = () => {
           <Link to="/" className="text-2xl font-bold text-blue-600">
             ShopHub
           </Link>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
+            <button
+              onClick={handleRefreshOrders}
+              className="text-gray-700 hover:text-blue-600 font-semibold flex items-center gap-2"
+              title="Refresh orders"
+            >
+              🔄 Refresh
+            </button>
             <Link to="/" className="text-gray-700 hover:text-blue-600 font-semibold">
               Home
             </Link>
@@ -151,7 +169,13 @@ const OrdersPage: React.FC = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold mb-8">My Orders</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">My Orders</h1>
+          <p className="text-gray-600">
+            {orders?.length || 0} {orders?.length === 1 ? 'order' : 'orders'} found
+            {total !== undefined && total !== orders?.length && ` (Total: ${total})`}
+          </p>
+        </div>
 
         {orders.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">

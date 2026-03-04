@@ -129,6 +129,7 @@ const CheckoutPage: React.FC = () => {
 
     try {
       // Create order with payment method
+      console.log('🛒 [Checkout] Creating order...');
       const result = await dispatch(
         createOrder({ 
           shipping_address: formattedShippingAddress,
@@ -140,15 +141,20 @@ const CheckoutPage: React.FC = () => {
         const order = result.payload;
         setOrderCreated(true);
         setOrderDetails(order);
-        console.log('✅ Order created:', order);
+        console.log('✅ [Checkout] Order created successfully:', order);
         
         // Fetch updated orders list first
+        console.log('📦 [Checkout] Fetching updated orders list...');
         const ordersResult = await dispatch(fetchUserOrders());
-        console.log('✅ Orders fetched:', ordersResult);
+        console.log('📦 [Checkout] Orders fetched:', ordersResult);
+        
+        if (fetchUserOrders.fulfilled.match(ordersResult)) {
+          console.log('✅ [Checkout] Orders successfully loaded:', ordersResult.payload);
+        }
         
         // Then clear the cart after order is confirmed in database
         const clearResult = await dispatch(clearCart());
-        console.log('✅ Cart cleared:', clearResult);
+        console.log('✅ [Checkout] Cart cleared:', clearResult);
         
         // Show success modal with animation
         setShowSuccessModal(true);
@@ -156,7 +162,7 @@ const CheckoutPage: React.FC = () => {
         // Don't show toast when showing modal - the modal is the feedback
         // Don't auto-redirect - let user click the button
       } else {
-        console.error('❌ Order creation failed:', result);
+        console.error('❌ [Checkout] Order creation failed:', result);
         toast.error('Failed to create order');
         setIsProcessing(false);
       }
